@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA GPU 25 — Silicon &amp; Substrates: Process, Reticle Limits, and Multi-Die Packaging</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-card: #0d1117;
+            --bg-code: #161b22;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent: #76B900;
+            --accent-dim: #76B90044;
+            --accent-glow: #76B90033;
+            --border: #21262d;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --font-body: 'Inter', sans-serif;
+            --max-width: 900px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 17px;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ── Header ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .series-label {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 .accent {
+            color: var(--accent);
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        /* ── Tag Pills ── */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            background: var(--accent-dim);
+            white-space: nowrap;
+        }
+
+        /* ── Pipeline Flow Bar ── */
+        .pipeline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+            max-width: var(--max-width);
+        }
+
+        .pipeline-step {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 0.3rem 0.7rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .pipeline-arrow {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        /* ── Slides ── */
+        .slide {
+            min-height: 100vh;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-number {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--accent-dim);
+            position: absolute;
+            top: 2rem;
+            right: 1.5rem;
+            line-height: 1;
+            user-select: none;
+        }
+
+        .slide h2 {
+            font-family: var(--font-display);
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            line-height: 1.25;
+        }
+
+        .slide h3 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .slide p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .slide p strong {
+            color: var(--text-primary);
+        }
+
+        .slide ul, .slide ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .slide li {
+            margin-bottom: 0.4rem;
+        }
+
+        .slide li strong {
+            color: var(--text-primary);
+        }
+
+        /* ── Code Blocks ── */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 1.25rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            background: rgba(118, 185, 0, 0.08);
+            padding: 0.4rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #c9d1d9;
+        }
+
+        /* Syntax highlighting (manual) */
+        .kw { color: #ff7b72; }
+        .fn { color: #d2a8ff; }
+        .str { color: #a5d6ff; }
+        .cm { color: #8b949e; font-style: italic; }
+        .num { color: #79c0ff; }
+        .type { color: #ffa657; }
+        .dir { color: #ff7b72; }
+        .mac { color: #ffa657; }
+
+        /* ── Tables ── */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--bg-code);
+            color: var(--accent);
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) td {
+            background: rgba(13, 17, 23, 0.5);
+        }
+
+        /* ── Diagrams ── */
+        .diagram-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .diagram-box {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .diagram-box.accent {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(118, 185, 0, 0.08);
+        }
+
+        .diagram-box.dim {
+            color: var(--text-secondary);
+            border-color: var(--border);
+        }
+
+        .diagram-arrow {
+            color: var(--accent);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        /* Vertical flow diagrams */
+        .diagram-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .diagram-vertical .diagram-arrow {
+            font-size: 1.1rem;
+        }
+
+        /* Nested hierarchy diagram */
+        .hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .hierarchy-level {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .hierarchy-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .hierarchy-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+
+        .hierarchy-item {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .hierarchy-item.accent {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(118, 185, 0, 0.08);
+        }
+
+        /* Grid diagram */
+        .diagram-grid {
+            display: grid;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .diagram-grid.cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .diagram-grid.cols-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .diagram-panel {
+            padding: 1rem;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .diagram-panel.accent-border {
+            border-left: 3px solid var(--accent);
+        }
+
+        .diagram-panel h4 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .diagram-panel p, .diagram-panel ul {
+            font-size: 0.85rem;
+        }
+
+        /* ── Callout Boxes ── */
+        .callout {
+            background: var(--bg-card);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1.25rem 0;
+        }
+
+        .callout p {
+            margin-bottom: 0;
+        }
+
+        .callout .callout-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+        }
+
+        /* ── Tier Visual ── */
+        .tier-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .tier-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tier-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 90px;
+            text-align: right;
+        }
+
+        .tier-fill {
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            white-space: nowrap;
+            transition: width 0.6s ease;
+        }
+
+        .tier-cost {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            min-width: 70px;
+        }
+
+        /* ── Contents list ── */
+        .contents-list {
+            list-style: none;
+            padding-left: 0;
+            counter-reset: contents;
+        }
+
+        .contents-list li {
+            counter-increment: contents;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .contents-list li:last-child {
+            border-bottom: none;
+        }
+
+        .contents-list li::before {
+            content: counter(contents, decimal-leading-zero);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            min-width: 2rem;
+        }
+
+        .contents-list a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .contents-list a:hover {
+            color: var(--accent);
+        }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            max-width: var(--max-width);
+            margin: 0 auto;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .slide {
+                padding: 3rem 1rem;
+                min-height: auto;
+            }
+
+            .slide-number {
+                font-size: 3rem;
+                top: 1.5rem;
+                right: 1rem;
+            }
+
+            .slide h2 {
+                font-size: 1.5rem;
+            }
+
+            .diagram-grid.cols-2,
+            .diagram-grid.cols-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .pipeline {
+                gap: 0.15rem;
+            }
+
+            .pipeline-step {
+                font-size: 0.6rem;
+                padding: 0.2rem 0.4rem;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            table {
+                font-size: 0.78rem;
+            }
+
+            .tier-label {
+                min-width: 60px;
+                font-size: 0.65rem;
+            }
+
+            .tier-fill {
+                font-size: 0.6rem;
+                height: 26px;
+            }
+        }
+
+        /* ── Interactive controls (added for Local LLM series) ── */
+        .control-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin: 1.25rem 0;
+        }
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .control-row label {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            min-width: 180px;
+        }
+        .control-row input[type="range"] {
+            flex: 1;
+            min-width: 160px;
+            accent-color: var(--accent);
+        }
+        .control-row input[type="number"],
+        .control-row select {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 4px;
+            padding: 0.3rem 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+        }
+        .control-row .val {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            min-width: 80px;
+            text-align: right;
+        }
+        .btn {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            padding: 0.4rem 0.9rem;
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .btn:hover { background: rgba(118, 185, 0, 0.2); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn.secondary {
+            background: var(--bg-code);
+            color: var(--text-secondary);
+            border-color: var(--border);
+        }
+        .result-box {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-top: 0.75rem;
+        }
+        .result-box .line-label { color: var(--text-secondary); }
+        .result-box .line-val   { color: var(--accent); font-weight: 600; }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .metric {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+        }
+        .metric .metric-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .metric .metric-value {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+
+        /* Canvas / SVG containers */
+        .canvas-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.25rem 0;
+            overflow-x: auto;
+        }
+        .canvas-wrap canvas,
+        .canvas-wrap svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        /* Small inline badge */
+        .badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            padding: 0.1rem 0.45rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: middle;
+            margin-left: 0.3rem;
+        }
+        .badge.ok    { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+        .badge.warn  { border-color: #ffa657; color: #ffa657; background: rgba(255,166,87,0.08); }
+        .badge.bad   { border-color: #ff7b72; color: #ff7b72; background: rgba(255,123,114,0.08); }
+
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="series-label">NVIDIA GPU Architectures Series — Presentation 25</div>
+    <h1><span class="accent">Silicon &amp; Substrates</span> &mdash; Process, Reticle Limits, and Multi-Die Packaging</h1>
+    <p class="subtitle">Behind every NVIDIA GPU is a TSMC fab, an EUV scanner, a CoWoS line, and an absolute reticle limit of about 830 mm&sup2; per die. Walk through the process node history, why Blackwell broke through reticle limits with two dies, NV-HBI die-to-die links, CoWoS-S vs CoWoS-L, and what's coming next.</p>
+
+    <div class="tags">
+        <span class="tag">TSMC 4N</span><span class="tag">4NP</span><span class="tag">3nm</span>
+        <span class="tag">A16</span><span class="tag">EUV</span><span class="tag">Reticle</span>
+        <span class="tag">NV-HBI</span><span class="tag">CoWoS-S</span><span class="tag">CoWoS-L</span>
+        <span class="tag">Chiplet</span><span class="tag">Backside power</span>
+    </div>
+
+    <div class="pipeline">
+        <span class="pipeline-step">Wafer</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Litho</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Reticle</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Dies</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Interposer</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Substrate</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Package</span>
+    </div>
+</header>
+
+<section class="slide" id="slide-00">
+    <div class="slide-number">00</div>
+    <h2>Topics We'll Cover</h2>
+    <p>The fab-and-package layer of the NVIDIA stack &mdash; not because everyone needs to know the litho stepper sequence, but because a 2026 AI engineer who doesn't know what CoWoS-L is can't reason about why H200 was a year-long shortage.</p>
+    <ul class="contents-list">
+        <li><a href="#slide-01">NVIDIA's Process Lineage &mdash; Pascal to Blackwell</a></li>
+        <li><a href="#slide-02">What &quot;TSMC 4N&quot; Actually Means</a></li>
+        <li><a href="#slide-03">The Reticle Limit &mdash; ~830 mm&sup2;</a></li>
+        <li><a href="#slide-04">Defect Density &amp; Binning</a></li>
+        <li><a href="#slide-05">Blackwell's Dual-Die Solution &mdash; NV-HBI</a></li>
+        <li><a href="#slide-06">CoWoS &mdash; TSMC's Advanced Packaging Family</a></li>
+        <li><a href="#slide-07">What Limits Capacity Right Now</a></li>
+        <li><a href="#slide-08">Coming Next &mdash; N3, A16, Backside Power</a></li>
+        <li><a href="#slide-09">Chiplet Trends &mdash; Industry Convergence</a></li>
+        <li><a href="#slide-10">What This Means for AI Engineers</a></li>
+        <li><a href="#slide-11">Interactive: Process &amp; Packaging Picker</a></li>
+    </ul>
+</section>
+
+<section class="slide" id="slide-01">
+    <div class="slide-number">01</div>
+    <h2>NVIDIA's Process Lineage &mdash; Pascal to Blackwell</h2>
+    <p>Eight years, four real process node generations, two reticle-limit walls, and one chiplet pivot. The progression of NVIDIA's flagship datacenter dies tracks the limits of TSMC's bleeding-edge logic process more closely than any other product family in the industry.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Family</th><th>Year</th><th>Foundry</th><th>Node</th><th>Top-die transistors</th><th>Top-die area</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Pascal GP100</strong></td><td>2016</td><td>TSMC</td><td>16FF</td><td>15.3 B</td><td>610 mm&sup2;</td></tr>
+                <tr><td><strong>Volta GV100</strong></td><td>2017</td><td>TSMC</td><td>12FF</td><td>21.1 B</td><td>815 mm&sup2;</td></tr>
+                <tr><td><strong>Turing TU102</strong></td><td>2018</td><td>TSMC</td><td>12FF</td><td>18.6 B</td><td>754 mm&sup2;</td></tr>
+                <tr><td><strong>Ampere GA100</strong></td><td>2020</td><td>TSMC</td><td>7N</td><td>54.2 B</td><td>826 mm&sup2;</td></tr>
+                <tr><td><strong>Ada AD102</strong></td><td>2022</td><td>TSMC</td><td>4N</td><td>76.3 B</td><td>608 mm&sup2;</td></tr>
+                <tr><td><strong>Hopper GH100</strong></td><td>2022</td><td>TSMC</td><td>4N</td><td>80 B</td><td>814 mm&sup2;</td></tr>
+                <tr><td><strong>Blackwell B200</strong></td><td>2024</td><td>TSMC</td><td>4NP</td><td>~104 B &times; 2 = 208 B</td><td>~750 mm&sup2; &times; 2</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Read between the lines</div>
+        <p>Notice GV100, GA100, GH100 all sit at <strong>815, 826, 814 mm&sup2;</strong> &mdash; the reticle ceiling. NVIDIA's flagship strategy for a decade was simply &quot;build the largest die TSMC can print.&quot; That approach hit the wall: Blackwell B200 is two ~750 mm&sup2; dies stitched together because one die <em>could not be made bigger</em>. The transistor count doubling between Hopper and Blackwell came almost entirely from going dual-die, not from process shrink.</p>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">A note on labels</div>
+        <p>&quot;TSMC 4N&quot; (used by Hopper, Ada, RTX 40-series) is a custom NVIDIA-tuned variant of TSMC's N4P. It is <strong>not</strong> a different node from N4P &mdash; the same transistor density, the same back-end-of-line metal pitches. The differences live in the cell library and physical-implementation flow. Slide 02 unpacks why this label is misleading.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-02">
+    <div class="slide-number">02</div>
+    <h2>What &quot;TSMC 4N&quot; Actually Means</h2>
+    <p>NVIDIA's process labels have become deliberately misleading marketing artefacts. Knowing the real foundry-node alignment matters because it tells you the actual transistor density, power envelope, and (more practically) which AI accelerators are competing for the same wafer slots.</p>
+
+    <h3>The TSMC node ladder for this era</h3>
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>The headline nodes</h4>
+            <ul>
+                <li><strong>N5</strong> &mdash; HVM 2020. First TSMC EUV-heavy node. Used by Apple A14, M1.</li>
+                <li><strong>N5P</strong> &mdash; 2021 refresh of N5. ~5% perf or ~10% power.</li>
+                <li><strong>N4</strong> &mdash; 2022. Effectively a polished N5; same density.</li>
+                <li><strong>N4P</strong> &mdash; 2022 refresh of N4. ~6% perf, ~22% efficiency vs N5.</li>
+                <li><strong>N3</strong> (N3B) &mdash; HVM 2022/23. First true new node since N5.</li>
+                <li><strong>N3E</strong> &mdash; 2024. Relaxed mask cost, better yield than N3B.</li>
+                <li><strong>N3P</strong> &mdash; 2025. Performance refresh of N3E.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>What &quot;NVIDIA-customised&quot; means</h4>
+            <ul>
+                <li>NVIDIA engages TSMC for <strong>physical-implementation tweaks</strong>: cell library variants, custom metal stack, restricted Vt mix.</li>
+                <li>No actual feature-size shrink &mdash; the lithography and BEOL pitches are stock.</li>
+                <li>Yields the gain you'd get from a careful in-house P&amp;R team plus a tuned PDK; not from a node shrink.</li>
+                <li>Mostly enables higher achievable Fmax at thermal envelopes NVIDIA cares about.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>The label-vs-reality map</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Marketing label</th><th>Real TSMC alignment</th><th>Who uses it</th></tr></thead>
+            <tbody>
+                <tr><td><strong>NVIDIA 4N</strong></td><td>N5 family, NVIDIA-customised; closer to N4 than to stock N5</td><td>Hopper GH100, Ada AD102, RTX 40-series</td></tr>
+                <tr><td><strong>NVIDIA 4NP</strong></td><td>N4P with NVIDIA-specific physical tweaks</td><td>Blackwell B100/B200, RTX 50-series</td></tr>
+                <tr><td><strong>AMD &quot;5 nm&quot;</strong></td><td>Stock N5</td><td>MI300A/X compute dies (with N6 IO chiplets)</td></tr>
+                <tr><td><strong>Apple &quot;3 nm&quot;</strong></td><td>N3B (M3, A17 Pro), N3E (M3 refresh, M4)</td><td>Apple silicon</td></tr>
+                <tr><td><strong>Intel 18A</strong></td><td>Intel internal node, ~TSMC N2 class with backside power (PowerVia)</td><td>Lunar Lake successors, Clearwater Forest</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Why &quot;4N&quot;?</div>
+        <p>The label was chosen carefully. <em>4N</em> sounds adjacent to <em>N4</em>, which sounds newer than <em>N5</em>. In reality NVIDIA Hopper shipped on a customised N5-class process while Apple's contemporaneous M2 Max also ran on N5 &mdash; same generation, different marketing. AMD MI300X uses N5 + N6 chiplets; Apple M3/M4 uses N3B/N3E. Naming aside, what matters is who's competing for the same wafer slot at TSMC: in 2024, it was NVIDIA, AMD, Apple, and several hyperscaler ASICs all on N5/N4-class capacity.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-03">
+    <div class="slide-number">03</div>
+    <h2>The Reticle Limit &mdash; ~830 mm&sup2;</h2>
+    <p>EUV scanners print one <strong>reticle field</strong> at a time. The reticle is a stencil mask; the scanner steps it across the wafer, exposing one rectangular field per shot. The maximum field size is set by the optics &mdash; specifically the lens diameter and the scanner's slit dimensions &mdash; and it is roughly <strong>26 mm &times; 33 mm = 858 mm&sup2;</strong>. Practical usable die area is closer to ~830 mm&sup2; once scribe lanes and alignment marks are subtracted.</p>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 320" width="720" height="320" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .field   { fill: rgba(118,185,0,0.06); stroke: #76B900; stroke-width: 2; stroke-dasharray: 6 4; }
+                .die     { fill: rgba(118,185,0,0.25); stroke: #76B900; stroke-width: 2; }
+                .scribe  { fill: none; stroke: #ff7b72; stroke-width: 1; stroke-dasharray: 3 3; }
+                .lbl     { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .val     { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; }
+                .h       { fill: #e6edf3; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .accent  { fill: #76B900; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; }
+            </style>
+            <text x="10" y="20" class="h">EUV reticle field &mdash; 26 mm &times; 33 mm = 858 mm&sup2; (theoretical max)</text>
+
+            <!-- Reticle field outline -->
+            <rect x="180" y="50" width="360" height="240" class="field"/>
+            <text x="540" y="45" class="lbl" text-anchor="end">reticle field outline</text>
+
+            <!-- Field dimensions -->
+            <text x="360" y="305" class="lbl" text-anchor="middle">26 mm</text>
+            <text x="170" y="170" class="lbl" text-anchor="end">33 mm</text>
+
+            <!-- Die occupying ~95% of field -->
+            <rect x="195" y="65" width="330" height="210" class="die"/>
+            <text x="360" y="155" class="accent" text-anchor="middle">GH100 (Hopper)</text>
+            <text x="360" y="172" class="val" text-anchor="middle">814 mm&sup2;</text>
+            <text x="360" y="190" class="lbl" text-anchor="middle">~95% of usable field</text>
+
+            <!-- Scribe lanes -->
+            <rect x="180" y="50" width="360" height="240" class="scribe"/>
+            <text x="555" y="65" class="lbl">scribe lanes</text>
+            <text x="555" y="80" class="lbl">+ alignment marks</text>
+            <text x="555" y="95" class="lbl">consume edges</text>
+        </svg>
+    </div>
+
+    <h3>Why the limit exists</h3>
+    <ul>
+        <li><strong>Optical:</strong> the lens column has a finite numerical aperture and a finite slit. Beyond ~26&times;33 mm the projected image distorts and resolution falls.</li>
+        <li><strong>Mechanical:</strong> the reticle stage and wafer stage scan in opposite directions during exposure (dry/wet scan). Field size is set by stage travel and slit width.</li>
+        <li><strong>Yield:</strong> defect density (D) is roughly per-cm&sup2;. For an 8 cm&sup2; die at typical D ~0.08/cm&sup2;, yield falls below 50% before redundancy. Each extra mm&sup2; near the wall costs proportionally more.</li>
+    </ul>
+
+    <h3>How NVIDIA stacked up against the wall</h3>
+    <div class="tier-visual">
+        <div class="tier-bar">
+            <div class="tier-label">GP100</div>
+            <div class="tier-fill" style="width: 71%; background: rgba(118,185,0,0.4); border: 1px solid #76B900;">610 mm&sup2; &mdash; 71% of reticle</div>
+            <div class="tier-cost">2016</div>
+        </div>
+        <div class="tier-bar">
+            <div class="tier-label">GV100</div>
+            <div class="tier-fill" style="width: 95%; background: rgba(255,166,87,0.4); border: 1px solid #ffa657;">815 mm&sup2; &mdash; at the wall</div>
+            <div class="tier-cost">2017</div>
+        </div>
+        <div class="tier-bar">
+            <div class="tier-label">GA100</div>
+            <div class="tier-fill" style="width: 96%; background: rgba(255,166,87,0.4); border: 1px solid #ffa657;">826 mm&sup2; &mdash; at the wall</div>
+            <div class="tier-cost">2020</div>
+        </div>
+        <div class="tier-bar">
+            <div class="tier-label">GH100</div>
+            <div class="tier-fill" style="width: 95%; background: rgba(255,166,87,0.4); border: 1px solid #ffa657;">814 mm&sup2; &mdash; at the wall</div>
+            <div class="tier-cost">2022</div>
+        </div>
+        <div class="tier-bar">
+            <div class="tier-label">B200 (one die)</div>
+            <div class="tier-fill" style="width: 87%; background: rgba(118,185,0,0.4); border: 1px solid #76B900;">~750 mm&sup2; &times; 2 dies</div>
+            <div class="tier-cost">2024</div>
+        </div>
+    </div>
+
+    <p>Volta, Ampere, Hopper sat <em>permanently against the ceiling</em>. Blackwell broke the wall not by building a bigger die but by building two and connecting them &mdash; the subject of slide 05.</p>
+</section>
+
+<section class="slide" id="slide-04">
+    <div class="slide-number">04</div>
+    <h2>Defect Density &amp; Binning</h2>
+    <p>Wafers carry random defects: lithography particles, mask flaws, etch micro-cracks, contamination. Each defect that lands in a critical area kills the die. Yield versus die area follows a negative-binomial model:</p>
+
+    <div class="callout">
+        <div class="callout-label">Murphy / negative-binomial yield</div>
+        <p><code>Y &asymp; (1 + A&middot;D / k)^&minus;k</code> &mdash; where <strong>A</strong> = die area (cm&sup2;), <strong>D</strong> = defect density (defects/cm&sup2;), <strong>k</strong> = clustering parameter (typically 2&ndash;5). At TSMC 4N maturity in 2024, <strong>D &asymp; 0.08/cm&sup2;</strong>. For an 800 mm&sup2; (8 cm&sup2;) die, base yield without redundancy is ~50%.</p>
+    </div>
+
+    <h3>Why GH100 ships as multiple SKUs</h3>
+    <p>GH100 has <strong>144 SMs physical</strong> on the silicon. NVIDIA never ships all 144 enabled &mdash; they bin parts based on which SMs failed test, then disable failures and clusters of failures to meet target SM counts. The result is a SKU ladder out of identical silicon:</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>SKU</th><th>SMs enabled</th><th>HBM stacks</th><th>Notes</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>GH100 die (full)</strong></td><td>144 (physical)</td><td>6 (physical)</td><td>Never shipped at full count</td></tr>
+                <tr><td><strong>H100 SXM5</strong></td><td>132</td><td>5 active (80 GB HBM3)</td><td>Top-bin shipped product; ~92% SM yield</td></tr>
+                <tr><td><strong>H100 PCIe</strong></td><td>114</td><td>5 active (80 GB)</td><td>Lower-bin parts; lower clocks; PCIe form factor</td></tr>
+                <tr><td><strong>H800</strong></td><td>132</td><td>5 active</td><td>Export-restricted China SKU; capped NVLink BW</td></tr>
+                <tr><td><strong>H20</strong></td><td>78</td><td>5 active (96 GB HBM3)</td><td>China-market further-cut SKU; FP64 throttled</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Where the redundancy hides</h3>
+    <ul>
+        <li><strong>Spare SMs:</strong> GA100 had 128 physical SMs; only 108 (or 80 on lesser SKUs) shipped enabled &mdash; that is ~16% disabled headroom for yield.</li>
+        <li><strong>Spare cache slices:</strong> L2 partitions can be selectively disabled if any tag-array fails BIST.</li>
+        <li><strong>Spare HBM stacks:</strong> the GH100 die package has 6 HBM site stacks but only 5 are connected (one is a redundant footprint).</li>
+        <li><strong>Speed binning within a single SKU:</strong> H100 SXM5 boards still ship at slightly different boost clock targets depending on power/leakage characterisation.</li>
+    </ul>
+
+    <div class="code-block">
+        <div class="code-header">Fictional yield-arithmetic illustration (units: cm&sup2;, defects/cm&sup2;)</div>
+        <pre><code><span class="cm"># Murphy model with k=3 (typical TSMC mature node)</span>
+<span class="kw">def</span> <span class="fn">yield_pct</span>(area_cm2, D, k=<span class="num">3</span>):
+    <span class="kw">return</span> (<span class="num">1</span> + area_cm2 * D / k) ** (<span class="kw">-</span>k) * <span class="num">100</span>
+
+<span class="cm"># GH100 814 mm^2 = 8.14 cm^2 at TSMC 4N maturity (D~0.08)</span>
+yield_pct(<span class="num">8.14</span>, <span class="num">0.08</span>) <span class="cm"># ~ 50% raw die yield</span>
+
+<span class="cm"># With ~10% spare SMs giving recovery on isolated SM defects:</span>
+yield_pct(<span class="num">8.14</span>, <span class="num">0.08</span> * <span class="num">0.55</span>) <span class="cm"># ~ 70% effective yield after binning</span>
+
+<span class="cm"># Compare AD102 608 mm^2 at same D &mdash; consumer Ada flagship</span>
+yield_pct(<span class="num">6.08</span>, <span class="num">0.08</span>) <span class="cm"># ~ 60% raw &mdash; smaller is forgiving</span></code></pre>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">The economic punchline</div>
+        <p>A GH100 wafer has roughly 65 candidate dies. After yield, ~30&ndash;45 are sellable. NVIDIA's wafer cost from TSMC for 4N has been quoted at $16&ndash;20k. That works out to roughly $400&ndash;600 of <em>silicon</em> per H100 &mdash; far less than retail. The rest of the BoM (HBM stacks, packaging, test) and gross margin make the rest. This is why a defective die that bins into H800 or H20 still earns money.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-05">
+    <div class="slide-number">05</div>
+    <h2>Blackwell's Dual-Die Solution &mdash; NV-HBI</h2>
+    <p>When the reticle ceiling stopped rising, NVIDIA stopped trying. The Blackwell B200 is two reticle-sized dies, side by side on a single CoWoS-L interposer, connected edge-to-edge by a high-bandwidth silicon bridge that NVIDIA calls <strong>NV-HBI</strong> &mdash; NVIDIA High-Bandwidth Interface.</p>
+
+    <h3>What NV-HBI delivers</h3>
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Bandwidth</h4>
+            <p><strong>10 TB/s bidirectional</strong> across the die-to-die interface &mdash; about 2&times; what HBM3e delivers per stack. That is enough for cache-coherent traffic, L2 sharing, and CUDA kernel migration without observable cost.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Coherence</h4>
+            <p>Software sees <strong>one GPU</strong>: one CUDA context, one device ID, one unified L2 cache (the two dies' L2 partitions are kept coherent). The driver does not split workloads across dies; the hardware presents a single SM array.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Physical implementation</h4>
+            <p>Point-to-point silicon bridges (LSI &mdash; Local Silicon Interconnect) under the die-to-die boundary. <em>Not</em> a full silicon interposer between the dies &mdash; just a strip of bridges where the high-density traces need to land.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Why bridges, not full interposer</h4>
+            <p>A full silicon interposer big enough for two reticle-sized dies plus 8 HBM stacks would be enormous (&gt;1500 mm&sup2;), costly, and capacity-bound at TSMC. CoWoS-L with strategic bridges keeps the cost trajectory rational.</p>
+        </div>
+    </div>
+
+    <h3>B200 package cross-section</h3>
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 360" width="720" height="360" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .substrate { fill: #2d2418; stroke: #ffa657; stroke-width: 1.5; }
+                .interp    { fill: #1a2e1a; stroke: #76B900; stroke-width: 1.5; }
+                .die       { fill: rgba(118,185,0,0.3); stroke: #76B900; stroke-width: 2; }
+                .hbm       { fill: rgba(210,168,255,0.3); stroke: #d2a8ff; stroke-width: 1.5; }
+                .bridge    { fill: rgba(255,166,87,0.5); stroke: #ffa657; stroke-width: 1.5; }
+                .lbl       { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .val       { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; }
+                .h         { fill: #e6edf3; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .accent    { fill: #76B900; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; }
+            </style>
+            <text x="10" y="18" class="h">B200 package &mdash; cross-section (schematic, not to scale)</text>
+
+            <!-- BGA balls -->
+            <g fill="#8b949e">
+                <circle cx="60"  cy="320" r="4"/><circle cx="100" cy="320" r="4"/><circle cx="140" cy="320" r="4"/>
+                <circle cx="180" cy="320" r="4"/><circle cx="220" cy="320" r="4"/><circle cx="260" cy="320" r="4"/>
+                <circle cx="300" cy="320" r="4"/><circle cx="340" cy="320" r="4"/><circle cx="380" cy="320" r="4"/>
+                <circle cx="420" cy="320" r="4"/><circle cx="460" cy="320" r="4"/><circle cx="500" cy="320" r="4"/>
+                <circle cx="540" cy="320" r="4"/><circle cx="580" cy="320" r="4"/><circle cx="620" cy="320" r="4"/>
+                <circle cx="660" cy="320" r="4"/>
+            </g>
+            <text x="690" y="320" class="lbl" text-anchor="end">BGA balls</text>
+
+            <!-- Substrate -->
+            <rect x="40" y="265" width="640" height="50" class="substrate"/>
+            <text x="50" y="290" class="lbl">organic substrate (BT/ABF) &mdash; routes to motherboard</text>
+
+            <!-- Interposer (CoWoS-L = mostly organic with silicon bridge strips) -->
+            <rect x="60" y="220" width="600" height="45" class="interp"/>
+            <text x="70" y="250" class="lbl">CoWoS-L mixed substrate &mdash; organic + silicon bridge tiles</text>
+
+            <!-- Bridges (LSI) under die-to-die seam -->
+            <rect x="345" y="215" width="30" height="10" class="bridge"/>
+            <text x="380" y="223" class="accent">LSI bridge (NV-HBI: 10 TB/s)</text>
+
+            <!-- Bridges under die-to-HBM seams -->
+            <rect x="120" y="215" width="20" height="10" class="bridge"/>
+            <rect x="195" y="215" width="20" height="10" class="bridge"/>
+            <rect x="505" y="215" width="20" height="10" class="bridge"/>
+            <rect x="580" y="215" width="20" height="10" class="bridge"/>
+
+            <!-- HBM stacks (4 each side) -->
+            <g>
+                <rect x="80"  y="155" width="60" height="60" class="hbm"/>
+                <text x="110" y="180" class="val" text-anchor="middle">HBM3e</text>
+                <text x="110" y="195" class="lbl" text-anchor="middle">24 GB</text>
+
+                <rect x="155" y="155" width="60" height="60" class="hbm"/>
+                <text x="185" y="180" class="val" text-anchor="middle">HBM3e</text>
+
+                <rect x="500" y="155" width="60" height="60" class="hbm"/>
+                <text x="530" y="180" class="val" text-anchor="middle">HBM3e</text>
+
+                <rect x="575" y="155" width="60" height="60" class="hbm"/>
+                <text x="605" y="180" class="val" text-anchor="middle">HBM3e</text>
+            </g>
+            <text x="650" y="148" class="lbl" text-anchor="end">8&times; HBM3e stacks &mdash; 192 GB total, ~8 TB/s aggregate</text>
+
+            <!-- Die 0 and Die 1 -->
+            <rect x="225" y="105" width="125" height="110" class="die"/>
+            <text x="287" y="155" class="accent" text-anchor="middle">Die 0</text>
+            <text x="287" y="172" class="val" text-anchor="middle">~750 mm&sup2;</text>
+            <text x="287" y="188" class="lbl" text-anchor="middle">~104 B tx</text>
+
+            <rect x="370" y="105" width="125" height="110" class="die"/>
+            <text x="432" y="155" class="accent" text-anchor="middle">Die 1</text>
+            <text x="432" y="172" class="val" text-anchor="middle">~750 mm&sup2;</text>
+            <text x="432" y="188" class="lbl" text-anchor="middle">~104 B tx</text>
+
+            <!-- Die-to-die seam annotation -->
+            <line x1="360" y1="105" x2="360" y2="215" stroke="#ffa657" stroke-width="1" stroke-dasharray="3 2"/>
+            <text x="360" y="100" class="accent" text-anchor="middle">NV-HBI seam</text>
+
+            <!-- Annotation -->
+            <text x="10" y="50" class="lbl">From software:</text>
+            <text x="10" y="65" class="val">one GPU, one CUDA context, unified L2 across both dies</text>
+            <text x="10" y="80" class="lbl">From hardware:</text>
+            <text x="10" y="95" class="val">two reticle-limit dies + LSI bridge + 8 HBM3e stacks on CoWoS-L</text>
+        </svg>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Why this matters above the silicon layer</div>
+        <p>The dual-die architecture is invisible to CUDA but visible in <strong>NCCL all-reduce timing</strong> and in <strong>memory access latency variance</strong>. A kernel that touches HBM stacks on the &quot;far&quot; die from the SM scheduling it pays an extra few hundred picoseconds and crosses NV-HBI. Aggregate effect is small but measurable on memory-bound workloads &mdash; expect roughly 1&ndash;3% delta on workloads that don't fit in L2 vs idealised single-die.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-06">
+    <div class="slide-number">06</div>
+    <h2>CoWoS &mdash; TSMC's Advanced Packaging Family</h2>
+    <p>CoWoS (Chip-on-Wafer-on-Substrate) is TSMC's umbrella term for advanced packaging that puts logic dies and HBM stacks on a shared interposer over an organic substrate. There are three production variants in 2026, with very different cost / capacity / bandwidth trade-offs.</p>
+
+    <div class="diagram-grid cols-3">
+        <div class="diagram-panel accent-border">
+            <h4>CoWoS-S (Silicon)</h4>
+            <p>The original. A single large piece of <strong>silicon interposer</strong> sits below all the dies, routed with TSV grids and fine-pitch metal. Highest bandwidth per mm, highest cost.</p>
+            <ul>
+                <li><strong>Limit:</strong> interposer area capped at ~3&times; reticle (the interposer itself is patterned with photolithography).</li>
+                <li><strong>Used by:</strong> H100, H200, AMD MI250X, MI300X.</li>
+                <li><strong>Cost:</strong> highest of the three; capacity-constrained at TSMC.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>CoWoS-L (LSI bridges)</h4>
+            <p>The 2024+ workhorse. Replace most of the silicon interposer with <strong>cheap organic substrate</strong>; place small <strong>silicon bridges (LSI)</strong> only where you need ultra-fast die-to-die or die-to-HBM links.</p>
+            <ul>
+                <li><strong>Why it scales:</strong> organic is cheap and unbounded in area. Silicon is used only where the BW demand actually requires it.</li>
+                <li><strong>Used by:</strong> Blackwell B200, Apple Vision Pro M2, Intel Falcon Shores.</li>
+                <li><strong>Cost:</strong> lower than CoWoS-S at equivalent BW; better capacity scaling for 2026+.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>CoWoS-R (RDL)</h4>
+            <p>The cheapest variant. Uses an <strong>organic-only substrate</strong> with a high-density redistribution layer (RDL); no silicon bridges or interposer at all. Lower BW than -S or -L.</p>
+            <ul>
+                <li><strong>BW ceiling:</strong> a fraction of -S; suits chiplets that can tolerate narrower die-to-die links.</li>
+                <li><strong>Used by:</strong> AMD client/server CPUs, mid-tier accelerators.</li>
+                <li><strong>Cost:</strong> the cheap end &mdash; commodity-ish organic packaging.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>Comparing the three at a glance</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Variant</th><th>Interposer type</th><th>Die-to-die BW</th><th>Max area</th><th>Cost class</th><th>Where it fits</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>CoWoS-S</strong></td><td>Silicon, full</td><td>Highest (TBs/s)</td><td>~3&times; reticle</td><td>Highest</td><td>H100, H200, MI300X &mdash; max BW priority</td></tr>
+                <tr><td><strong>CoWoS-L</strong></td><td>Organic + silicon bridges</td><td>High (TBs/s on bridge)</td><td>Effectively unbounded</td><td>Mid-high</td><td>B200, Rubin &mdash; multi-die scaling</td></tr>
+                <tr><td><strong>CoWoS-R</strong></td><td>Organic + RDL</td><td>Modest (100s GB/s)</td><td>Effectively unbounded</td><td>Lowest</td><td>Client CPU chiplets, narrow-BW accelerators</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">The trade-off in one line</div>
+        <p>CoWoS-S delivers the highest BW per mm but is capacity-limited at TSMC because the interposer itself burns leading-node photolithography. CoWoS-L scales much better because most of the interposer is organic; you only burn silicon where you actually need the bandwidth. That is why every multi-die GPU launching from 2024 onward uses CoWoS-L, not CoWoS-S.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-07">
+    <div class="slide-number">07</div>
+    <h2>What Limits Capacity Right Now</h2>
+    <p>As of 2026 the bottleneck on AI GPU supply is not silicon wafer capacity. TSMC has plenty of N4/N5-class wafer slots; HBM is also well-sourced from SK hynix, Micron, and (slowly) Samsung. The actual bottleneck is <strong>CoWoS line capacity</strong> &mdash; the advanced packaging step that ties dies and HBM together onto interposers.</p>
+
+    <h3>The 2026 CoWoS picture</h3>
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>TSMC sites</h4>
+            <ul>
+                <li><strong>Phoenix (AZ):</strong> packaging line under construction; HVM 2026/27.</li>
+                <li><strong>Tainan (TW):</strong> the original CoWoS-S line; capacity expanded ~3&times; since 2023.</li>
+                <li><strong>Taoyuan (TW):</strong> CoWoS-L line; the priority expansion 2024&ndash;26.</li>
+                <li><strong>Zhunan (TW):</strong> additional advanced packaging fab brought online.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Other packagers</h4>
+            <ul>
+                <li><strong>SK hynix:</strong> in-house TSV stacking + some advanced packaging for HBM-attached dies.</li>
+                <li><strong>Samsung:</strong> I-Cube (silicon interposer) and X-Cube (3D vertical stack); used in some hyperscaler ASICs.</li>
+                <li><strong>Amkor / ASE:</strong> OSAT capacity for less demanding RDL packaging.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>Capacity figures (approximate, 2026)</h3>
+    <div class="tier-visual">
+        <div class="tier-bar">
+            <div class="tier-label">2023 Q1</div>
+            <div class="tier-fill" style="width: 18%; background: rgba(255,123,114,0.4); border: 1px solid #ff7b72;">~10k WPM</div>
+            <div class="tier-cost">Pre-boom</div>
+        </div>
+        <div class="tier-bar">
+            <div class="tier-label">2024 Q1</div>
+            <div class="tier-fill" style="width: 28%; background: rgba(255,166,87,0.4); border: 1px solid #ffa657;">~15k WPM</div>
+            <div class="tier-cost">Doubling</div>
+        </div>
+        <div class="tier-bar">
+            <div class="tier-label">2025 Q1</div>
+            <div class="tier-fill" style="width: 45%; background: rgba(255,166,87,0.4); border: 1px solid #ffa657;">~22k WPM</div>
+            <div class="tier-cost">Easing</div>
+        </div>
+        <div class="tier-bar">
+            <div class="tier-label">2026 Q1</div>
+            <div class="tier-fill" style="width: 60%; background: rgba(118,185,0,0.4); border: 1px solid #76B900;">~30k WPM</div>
+            <div class="tier-cost">Now</div>
+        </div>
+        <div class="tier-bar">
+            <div class="tier-label">2027 (proj.)</div>
+            <div class="tier-fill" style="width: 95%; background: rgba(118,185,0,0.4); border: 1px solid #76B900;">~55&ndash;60k WPM (projected)</div>
+            <div class="tier-cost">Near-double</div>
+        </div>
+    </div>
+    <p style="font-size: 0.85rem; color: var(--text-secondary);">Wafer-equivalents/month is an aggregated figure across CoWoS-S and CoWoS-L; the split is roughly 50/50 in 2026 and shifts toward L thereafter. One CoWoS wafer carries multiple GPU packages, but the carrier-wafer is the rate-limiting accounting unit.</p>
+
+    <h3>Who's competing for the slot</h3>
+    <ul>
+        <li><strong>NVIDIA:</strong> H100/H200/B100/B200, GB10, GB200 NVL72 &mdash; consumes the largest single share of CoWoS-L.</li>
+        <li><strong>AMD:</strong> MI300X, MI325X, MI350X &mdash; CoWoS-S today, transitioning to CoWoS-L for next-gen.</li>
+        <li><strong>Apple:</strong> Vision Pro / future spatial-compute parts use CoWoS-L silicon-bridge packaging.</li>
+        <li><strong>Hyperscalers:</strong> Google TPU, Amazon Trainium, Microsoft Maia &mdash; all booked CoWoS slots for custom ASICs.</li>
+        <li><strong>Networking:</strong> Broadcom Tomahawk-5 / Jericho switches with HBM also use CoWoS.</li>
+    </ul>
+
+    <div class="callout">
+        <div class="callout-label">The downstream consequence</div>
+        <p>Even if NVIDIA wanted to ship 5&times; as many H200s, they couldn't &mdash; CoWoS slots are pre-allocated, multi-quarter, and rationed across customers. That is why H100 was scarce through 2023&ndash;24 despite ample wafer supply. The packaging line, not the fab, sets the global ceiling on AI GPU shipments.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-08">
+    <div class="slide-number">08</div>
+    <h2>Coming Next &mdash; N3, A16, Backside Power</h2>
+    <p>Three transitions queue up over the next 18&ndash;36 months: the move to N3-family for compute dies, the introduction of <strong>backside power delivery</strong> on TSMC A16 (and Intel 18A), and a fresh round of die-stacking on top of all of it.</p>
+
+    <h3>N3 family</h3>
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>What N3 / N3E / N3P delivers</h4>
+            <ul>
+                <li><strong>~70%</strong> transistor density vs N5 (full library; SRAM scales much less).</li>
+                <li><strong>~30%</strong> lower power at iso-perf, or <strong>~15%</strong> faster at iso-power.</li>
+                <li><strong>N3B</strong> (Apple A17 Pro, M3) used aggressive EUV multi-patterning &mdash; expensive masks.</li>
+                <li><strong>N3E</strong> relaxed several layers; cheaper masks, better yield. The volume node.</li>
+                <li><strong>N3P</strong> (2025+): refresh of N3E with improved Fmax and slight density gain.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Where NVIDIA fits in</h4>
+            <ul>
+                <li><strong>Rubin (2026):</strong> reportedly N3 chiplets in dual-die config, similar to Blackwell topology but with the smaller area / lower power that N3 unlocks.</li>
+                <li><strong>RTX consumer (2026/27):</strong> consumer Blackwell-successor cards likely on N4P initially; N3 transition follows datacenter by ~12 months as usual.</li>
+                <li><strong>Cost:</strong> N3 wafer is ~30% pricier than N4P at HVM. NVIDIA absorbs it because the perf-per-watt win is large.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>A16 and backside power delivery</h3>
+    <p>TSMC's A16 (announced for HVM ~2026) is the &quot;1.6 nm&quot; class node. Beyond the usual density and power gains it introduces something architecturally new: <strong>Super Power Rail</strong>, TSMC's name for backside power delivery network (BPDN, sometimes BSPDN).</p>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 720 280" width="720" height="280" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .layerS  { fill: rgba(165,214,255,0.25); stroke: #a5d6ff; stroke-width: 1; }
+                .layerP  { fill: rgba(255,166,87,0.4);  stroke: #ffa657; stroke-width: 1; }
+                .si      { fill: #161b22; stroke: #30363d; }
+                .lbl     { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .val     { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; }
+                .h       { fill: #e6edf3; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; }
+                .accent  { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
+            </style>
+            <text x="10" y="20" class="h">Front-side stack (traditional) vs front+back split (A16 / Intel 18A)</text>
+
+            <!-- Traditional stack -->
+            <text x="180" y="50" class="accent" text-anchor="middle">Traditional (N5 / N3): all metal on front side</text>
+            <rect x="80" y="60" width="200" height="20" class="layerS"/>
+            <text x="285" y="74" class="lbl">M10&ndash;M14 wide signal &amp; power</text>
+            <rect x="80" y="80" width="200" height="20" class="layerS"/>
+            <text x="285" y="94" class="lbl">M5&ndash;M9 mid-pitch</text>
+            <rect x="80" y="100" width="200" height="20" class="layerP"/>
+            <text x="285" y="114" class="lbl">M1&ndash;M4 fine pitch + power tap-down</text>
+            <rect x="80" y="120" width="200" height="80" class="si"/>
+            <text x="180" y="160" class="val" text-anchor="middle">Silicon (transistors)</text>
+            <text x="180" y="175" class="lbl" text-anchor="middle">power &amp; signal share metal stack</text>
+
+            <!-- Backside power stack -->
+            <text x="540" y="50" class="accent" text-anchor="middle">A16 / 18A: power moves to back side</text>
+            <rect x="440" y="60" width="200" height="20" class="layerS"/>
+            <text x="645" y="74" class="lbl">front: signal-only metal stack</text>
+            <rect x="440" y="80" width="200" height="20" class="layerS"/>
+            <text x="645" y="94" class="lbl">tighter pitch, cleaner routing</text>
+            <rect x="440" y="100" width="200" height="20" class="layerS"/>
+            <text x="645" y="114" class="lbl">no power-rail compromise</text>
+            <rect x="440" y="120" width="200" height="80" class="si"/>
+            <text x="540" y="160" class="val" text-anchor="middle">Silicon (transistors)</text>
+            <rect x="440" y="200" width="200" height="40" class="layerP"/>
+            <text x="540" y="225" class="val" text-anchor="middle">backside power network (BSPDN)</text>
+            <text x="645" y="220" class="lbl">power delivered from below</text>
+        </svg>
+    </div>
+
+    <h3>What backside power delivery buys you</h3>
+    <ul>
+        <li><strong>~10% performance</strong> improvement at iso-power, or <strong>~30% power reduction</strong> at iso-performance &mdash; depending on whether the design retargets for speed or efficiency.</li>
+        <li><strong>Routing congestion relief.</strong> Power and signal stop competing for front-side metal tracks; cell utilisation rises and Fmax improves.</li>
+        <li><strong>IR drop reduction.</strong> Power rails see the silicon back side directly, with shorter resistance paths to the supply.</li>
+        <li><strong>Manufacturing complexity:</strong> wafer thinning, backside metal patterning, and front-to-back alignment add steps. Yield ramps slowly on the first generation.</li>
+    </ul>
+
+    <h3>Roadmap snapshot</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Node</th><th>Year</th><th>Foundry</th><th>Key feature</th><th>Likely first NVIDIA part</th></tr></thead>
+            <tbody>
+                <tr><td>N3 / N3E / N3P</td><td>2024&ndash;26</td><td>TSMC</td><td>~70% density vs N5; no BSPDN</td><td>Rubin (datacenter, 2026)</td></tr>
+                <tr><td>A16 (&quot;1.6 nm&quot;)</td><td>2026&ndash;27</td><td>TSMC</td><td>Super Power Rail (BSPDN)</td><td>Rubin Ultra / next-gen flagship</td></tr>
+                <tr><td>Intel 18A</td><td>2025&ndash;26</td><td>Intel</td><td>PowerVia BSPDN + RibbonFET (GAAFET)</td><td>NVIDIA may diversify; not committed</td></tr>
+                <tr><td>N2 / N2P</td><td>2025&ndash;27</td><td>TSMC</td><td>GAAFET (nanosheet); BSPDN on N2P</td><td>Rubin Ultra successor</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="slide" id="slide-09">
+    <div class="slide-number">09</div>
+    <h2>Chiplet Trends &mdash; Industry Convergence</h2>
+    <p>Multi-die GPUs are no longer the exception. Across the AI accelerator market the dominant 2025+ design pattern is &quot;multiple compute dies on an advanced package, connected by a proprietary or open die-to-die fabric.&quot; Here is the lay of the land.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Product</th><th>Vendor</th><th>Chiplet topology</th><th>Die-to-die fabric</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>B200</strong></td><td>NVIDIA</td><td>2&times; compute dies</td><td>NV-HBI (proprietary, 10 TB/s)</td></tr>
+                <tr><td><strong>GB200 NVL72</strong></td><td>NVIDIA</td><td>2&times; B200 GPUs + 1&times; Grace CPU per &quot;superchip&quot;; 36 superchips per rack</td><td>NV-HBI within GPU; NVLink-C2C to Grace; NVLink 5 inter-GPU; NVSwitch fabric</td></tr>
+                <tr><td><strong>MI300X</strong></td><td>AMD</td><td>8&times; GPU compute dies (XCDs) + 4&times; IO dies</td><td>InfinityFabric over silicon interposer (CoWoS-S)</td></tr>
+                <tr><td><strong>MI325X / MI350X</strong></td><td>AMD</td><td>Same XCD topology; updated HBM3e</td><td>InfinityFabric / future UCIe</td></tr>
+                <tr><td><strong>Falcon Shores</strong></td><td>Intel</td><td>Tile-based; CPU + GPU tiles</td><td>EMIB bridges (Intel's CoWoS-L equivalent)</td></tr>
+                <tr><td><strong>Gaudi 3</strong></td><td>Intel</td><td>2&times; compute tiles</td><td>EMIB</td></tr>
+                <tr><td><strong>M3 Ultra</strong></td><td>Apple</td><td>2&times; M3 Max</td><td>UltraFusion (&gt;2.5 TB/s)</td></tr>
+                <tr><td><strong>TPU v5e/v5p</strong></td><td>Google</td><td>Single die, but pod-level torus is the unit</td><td>OCS optical inter-chip switching</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Why the convergence</h3>
+    <ul>
+        <li><strong>Reticle ceiling.</strong> Big single dies stop scaling. Two reticle dies double the transistor budget at sub-2&times; cost.</li>
+        <li><strong>Yield arithmetic.</strong> Two 750 mm&sup2; dies have <em>much</em> better yield than one 1500 mm&sup2; die would (if the latter were even possible).</li>
+        <li><strong>Mix-and-match nodes.</strong> A cheap mature-node die for IO/cache; an expensive leading-node die for compute. AMD's MI300X uses N5 for compute, N6 for IO &mdash; significant cost saving.</li>
+        <li><strong>Heterogeneous integration.</strong> CPU + GPU on one package (GB10 Spark, MI300A, M-series) means cache coherency at silicon speed without a board-level link.</li>
+    </ul>
+
+    <h3>NV-HBI vs UCIe &mdash; the standard war</h3>
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>NV-HBI (NVIDIA proprietary)</h4>
+            <ul>
+                <li>Targeted, optimised for NVIDIA's architecture.</li>
+                <li>10 TB/s on B200; tight L2-coherent traffic patterns.</li>
+                <li>Locks in a single vendor &mdash; no third-party chiplets.</li>
+                <li>Comparable in spirit to AMD's InfinityFabric-on-package.</li>
+            </ul>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>UCIe (open standard)</h4>
+            <ul>
+                <li>Universal Chiplet Interconnect Express; backed by Intel, AMD, Arm, Qualcomm, Samsung, TSMC.</li>
+                <li>Defines PHY + protocol layers for chiplet interop.</li>
+                <li>2.0 spec (2024): up to 64 GT/s, 4 TB/s/mm shoreline density.</li>
+                <li>Goal: a chiplet marketplace where you can mix vendors. Reality: still mostly intra-vendor.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">The underlying truth</div>
+        <p>The industry isn't really converging on chiplets &mdash; it has <strong>already converged</strong>. Every flagship 2025 AI accelerator is multi-die. The remaining argument is over <em>which</em> die-to-die fabric. NVIDIA, AMD, and Apple use proprietary fabrics; the rest of the market rallies around UCIe. Expect that pattern to hold through this decade: incumbents keep their fabrics, challengers standardise to compete.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-10">
+    <div class="slide-number">10</div>
+    <h2>What This Means for AI Engineers</h2>
+    <p>You don't have to know which lithography stepper carved your H100 to use it. But the packaging-and-process layer leaks upward into observable behaviours that any platform engineer or LLM-serving operator will hit.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>(a) Launches are gated by packaging, not litho</h4>
+            <p>From 2023 onwards every major NVIDIA launch (H100, H200, B200) has been constrained by CoWoS allocation, not by silicon supply. Estimating ramp rates means tracking TSMC packaging investments, not just wafer starts.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>(b) SKU segmentation is a yield artefact</h4>
+            <p>H100 SXM5 / H100 PCIe / H800 / H20 are the same GH100 silicon at different bin tiers. When you specify hardware for a workload, choose by SM count + memory + clock, not by &quot;which generation&quot; &mdash; the underlying die may be identical.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>(c) Multi-die GPUs introduce NUMA-like effects</h4>
+            <p>Blackwell B200 presents as one GPU but accesses to &quot;far&quot; HBM across NV-HBI cost slightly more. CUDA hides this; profilers don't always. For latency-sensitive kernels you may see jitter that maps to die boundaries.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>(d) CoWoS allocation drives product mix</h4>
+            <p>Why was H100 a year scarce? Why did H200 ship roughly when it did? Both decisions came down to packaging slot allocation between H-class and B-class lines. The answer to &quot;when can I get 1000 H200s&quot; lives at TSMC's CoWoS coordinator's desk, not in NVIDIA's marketing schedule.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>(e) Datacenter leads consumer by ~12 months</h4>
+            <p>Foundry-tier process is expensive: TSMC 4N for H100 (2022) shipped on consumer cards (RTX 4090, also 4N) the same year, but datacenter capacity is consumed first. B200 (4NP, 2024) ships consumer (RTX 5090, 4NP) in 2025. Plan accordingly.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>(f) FP8 / FP4 ride process gains too</h4>
+            <p>Tensor-core support for FP8 (Hopper) and FP4 (Blackwell) isn't free silicon &mdash; the hardware runs because the process node delivered the density to spend on dedicated tensor pipes. Future MX-FP4 / MX-FP6 viability is largely a process-node story.</p>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">The takeaway in one sentence</div>
+        <p>The cadence of the AI accelerator market is the cadence of TSMC's advanced packaging line; everything else &mdash; FP4 support, dual-die GPUs, multi-quarter lead times &mdash; is downstream of that one fact.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-11">
+    <div class="slide-number">11</div>
+    <h2>Interactive: Process &amp; Packaging Picker</h2>
+    <p>Pick a workload class, target year, and unit volume. The picker estimates the foundry node, packaging type, die area, transistor budget, and approximate cost band &mdash; plus where the supply-chain bottleneck lands.</p>
+
+    <div class="control-panel">
+        <div class="control-row">
+            <label for="pp-workload">Workload</label>
+            <select id="pp-workload">
+                <option value="frontier">Frontier training (200B+ models)</option>
+                <option value="midinf" selected>Mid-tier inference (8&ndash;70B serving)</option>
+                <option value="edge">Edge / robotics inference</option>
+                <option value="consumer">Consumer gaming GPU</option>
+                <option value="hyper">Hyperscale superpod (NVL72-class)</option>
+            </select>
+        </div>
+        <div class="control-row">
+            <label for="pp-year">Year</label>
+            <select id="pp-year">
+                <option value="2025">2025</option>
+                <option value="2026" selected>2026</option>
+                <option value="2027">2027 (projection)</option>
+                <option value="2028">2028 (projection)</option>
+            </select>
+        </div>
+        <div class="control-row">
+            <label for="pp-vol">Volume (units)</label>
+            <input type="range" id="pp-vol" min="0" max="3" step="1" value="1">
+            <span class="val" id="pp-vol-v">10k</span>
+        </div>
+
+        <div class="metric-grid">
+            <div class="metric"><div class="metric-label">Foundry node</div><div class="metric-value" id="m-node">—</div></div>
+            <div class="metric"><div class="metric-label">Packaging</div><div class="metric-value" id="m-pkg">—</div></div>
+            <div class="metric"><div class="metric-label">Die area (mm&sup2;)</div><div class="metric-value" id="m-area">—</div></div>
+            <div class="metric"><div class="metric-label">Transistors (B)</div><div class="metric-value" id="m-tx">—</div></div>
+            <div class="metric"><div class="metric-label">Wafer cost (USD)</div><div class="metric-value" id="m-wcost">—</div></div>
+            <div class="metric"><div class="metric-label">Retail band</div><div class="metric-value" id="m-retail">—</div></div>
+        </div>
+
+        <div id="pp-out" class="result-box"></div>
+    </div>
+
+    <script>
+    (function(){
+        const volLabels = ['1k', '10k', '100k', '1M'];
+        const volMul    = [1, 10, 100, 1000];
+
+        const workloadProfile = {
+            frontier: {
+                label: 'Frontier training',
+                node: { '2025': '4NP', '2026': 'N3 / 4NP', '2027': 'N3P', '2028': 'A16' },
+                pkg:  { '2025': 'CoWoS-L', '2026': 'CoWoS-L', '2027': 'CoWoS-L', '2028': 'CoWoS-L + BSPDN' },
+                area: { '2025': '750 &times; 2', '2026': '~700 &times; 2', '2027': '~700 &times; 2', '2028': '~600 &times; 2&ndash;4' },
+                tx:   { '2025': '208', '2026': '~280', '2027': '~360', '2028': '~500+' },
+                wafer: 22000,
+                retail: { '2025': '$35k&ndash;45k', '2026': '$40k&ndash;55k', '2027': '$45k&ndash;60k', '2028': '$50k+' }
+            },
+            midinf: {
+                label: 'Mid-tier inference',
+                node: { '2025': '4N', '2026': '4NP', '2027': 'N3E', '2028': 'N3P' },
+                pkg:  { '2025': 'CoWoS-S', '2026': 'CoWoS-S / -L', '2027': 'CoWoS-L', '2028': 'CoWoS-L' },
+                area: { '2025': '~600&ndash;800', '2026': '~600&ndash;800', '2027': '~600', '2028': '~500' },
+                tx:   { '2025': '76&ndash;80', '2026': '~100', '2027': '~140', '2028': '~180' },
+                wafer: 18000,
+                retail: { '2025': '$15k&ndash;30k', '2026': '$18k&ndash;32k', '2027': '$20k&ndash;35k', '2028': '$25k+' }
+            },
+            edge: {
+                label: 'Edge / robotics',
+                node: { '2025': 'N6 / 5N', '2026': 'N5 / 4N', '2027': 'N4P', '2028': 'N3E' },
+                pkg:  { '2025': 'organic FCBGA', '2026': 'organic FCBGA', '2027': 'CoWoS-R', '2028': 'CoWoS-R' },
+                area: { '2025': '~100&ndash;200', '2026': '~150&ndash;250', '2027': '~200', '2028': '~200' },
+                tx:   { '2025': '8&ndash;15', '2026': '12&ndash;25', '2027': '20&ndash;35', '2028': '~40' },
+                wafer: 9000,
+                retail: { '2025': '$200&ndash;1.2k', '2026': '$300&ndash;1.5k', '2027': '$300&ndash;2k', '2028': '$400&ndash;2.5k' }
+            },
+            consumer: {
+                label: 'Consumer gaming',
+                node: { '2025': '4NP', '2026': '4NP', '2027': 'N3E', '2028': 'N3P' },
+                pkg:  { '2025': 'organic FCBGA', '2026': 'organic FCBGA', '2027': 'organic FCBGA', '2028': 'organic FCBGA' },
+                area: { '2025': '~600&ndash;750', '2026': '~600', '2027': '~500', '2028': '~450' },
+                tx:   { '2025': '92&ndash;110', '2026': '~110', '2027': '~140', '2028': '~170' },
+                wafer: 18000,
+                retail: { '2025': '$1.5k&ndash;2k', '2026': '$1.8k&ndash;2.5k', '2027': '$2k&ndash;3k', '2028': '$2.5k+' }
+            },
+            hyper: {
+                label: 'Hyperscale superpod',
+                node: { '2025': '4NP', '2026': 'N3 + 4NP', '2027': 'N3P + 4NP', '2028': 'A16 + N3P' },
+                pkg:  { '2025': 'CoWoS-L NVL72', '2026': 'CoWoS-L NVL72', '2027': 'CoWoS-L next-gen', '2028': 'CoWoS-L next-gen' },
+                area: { '2025': '~750 &times; 2 per GPU', '2026': '~700 &times; 2', '2027': '~700 &times; 2&ndash;4', '2028': '~600 &times; 4' },
+                tx:   { '2025': '208 / GPU', '2026': '~280 / GPU', '2027': '~400 / GPU', '2028': '~600 / GPU' },
+                wafer: 22000,
+                retail: { '2025': '$3M+ / rack', '2026': '$3.5M+ / rack', '2027': '$4M+ / rack', '2028': '$4.5M+ / rack' }
+            }
+        };
+
+        function bottleneck(workload, year, volIdx){
+            const vol = volMul[volIdx];
+            if (workload === 'frontier' || workload === 'hyper') {
+                if (vol >= 100 && (year === '2025' || year === '2026'))
+                    return 'CoWoS-L line capacity is the binding constraint &mdash; expect multi-quarter lead times for orders this size.';
+                if (vol >= 100 && year === '2027')
+                    return 'CoWoS-L easing as Phoenix and Taoyuan ramp; HBM4 supply may become the new constraint.';
+                if (vol >= 100)
+                    return 'Packaging eased; N2 / A16 wafer ramp now sets the schedule.';
+                return 'Volumes small enough to fit in current allocation; lead time driven by board-level integration.';
+            }
+            if (workload === 'midinf') {
+                if (vol >= 100 && year === '2025')
+                    return 'CoWoS-S contention with AMD MI300X &mdash; competing for the same line.';
+                if (vol >= 100)
+                    return 'CoWoS capacity adequate; HBM3e tier-2 supply is the swing factor.';
+                return 'Standard procurement; allocation rather than supply.';
+            }
+            if (workload === 'edge') {
+                return 'No advanced packaging needed &mdash; OSAT capacity is plentiful. Test throughput is the typical bottleneck.';
+            }
+            if (workload === 'consumer') {
+                if (vol >= 1000)
+                    return 'Consumer Ada/Blackwell uses organic FCBGA &mdash; supply abundant. Wafer allocation behind datacenter, not packaging.';
+                return 'Standard channel; consumer SKUs ship 6&ndash;12 months after datacenter on the same node.';
+            }
+            return '';
+        }
+
+        function rec(){
+            const w   = document.getElementById('pp-workload').value;
+            const yr  = document.getElementById('pp-year').value;
+            const vi  = parseInt(document.getElementById('pp-vol').value, 10);
+            const p   = workloadProfile[w];
+            const vol = volMul[vi];
+            document.getElementById('pp-vol-v').textContent = volLabels[vi];
+
+            document.getElementById('m-node').textContent  = p.node[yr];
+            document.getElementById('m-pkg').innerHTML     = p.pkg[yr];
+            document.getElementById('m-area').innerHTML    = p.area[yr];
+            document.getElementById('m-tx').textContent    = p.tx[yr];
+            document.getElementById('m-wcost').textContent = '~$' + p.wafer.toLocaleString();
+            document.getElementById('m-retail').innerHTML  = p.retail[yr];
+
+            const note  = bottleneck(w, yr, vi);
+            const cosys = (w === 'frontier' || w === 'hyper' || w === 'midinf') ? 'multi-die advanced packaging required' : 'monolithic die in organic package';
+            const supplyTag = note.includes('multi-quarter') || note.includes('contention')
+                                ? '<span class="badge bad">supply-constrained</span>'
+                                : note.includes('easing') || note.includes('swing factor') || note.includes('allocation')
+                                    ? '<span class="badge warn">tight</span>'
+                                    : '<span class="badge ok">healthy</span>';
+
+            document.getElementById('pp-out').innerHTML =
+                '<div><span class="line-label">workload</span> &rarr; <span class="line-val">' + p.label + '</span></div>' +
+                '<div><span class="line-label">target year</span> &rarr; <span class="line-val">' + yr + '</span></div>' +
+                '<div><span class="line-label">order size</span> &rarr; <span class="line-val">' + volLabels[vi] + ' units</span></div>' +
+                '<div><span class="line-label">topology</span> &rarr; <span class="line-val">' + cosys + '</span></div>' +
+                '<div style="margin-top:0.5rem;color:var(--text-secondary);">supply outlook ' + supplyTag + '<br>&bull; ' + note + '</div>';
+        }
+        ['pp-workload','pp-year','pp-vol'].forEach(id => document.getElementById(id).addEventListener('input', rec));
+        rec();
+    })();
+    </script>
+</section>
+
+<!-- ════════════════════════════════════ Footer ════════════════════════════════════ -->
+<footer class="footer">
+    <p>Part of the <a href="https://github.com/BrendanJamesLynskey/LLMs#nvidia-gpu-architectures">NVIDIA GPU Architectures Series</a></p>
+    <p style="margin-top: 0.5rem; font-size: 0.8rem;"><a href="https://github.com/BrendanJamesLynskey/LLMs#nvidia-gpu-architectures">Back to Series Index</a></p>
+</footer>
+
+<script>
+    // Smooth scroll for TOC links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+
+    // Subtle fade-in on scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.slide').forEach(slide => {
+        slide.style.opacity = '0';
+        slide.style.transform = 'translateY(30px)';
+        slide.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(slide);
+    });
+</script>
+
+</body>
+</html>
