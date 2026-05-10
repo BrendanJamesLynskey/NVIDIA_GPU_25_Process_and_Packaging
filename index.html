@@ -819,19 +819,19 @@
             </thead>
             <tbody>
                 <tr><td><strong>Pascal GP100</strong></td><td>2016</td><td>TSMC</td><td>16FF</td><td>15.3 B</td><td>610 mm&sup2;</td></tr>
-                <tr><td><strong>Volta GV100</strong></td><td>2017</td><td>TSMC</td><td>12FF</td><td>21.1 B</td><td>815 mm&sup2;</td></tr>
-                <tr><td><strong>Turing TU102</strong></td><td>2018</td><td>TSMC</td><td>12FF</td><td>18.6 B</td><td>754 mm&sup2;</td></tr>
+                <tr><td><strong>Volta GV100</strong></td><td>2017</td><td>TSMC</td><td>12FFN</td><td>21.1 B</td><td>815 mm&sup2;</td></tr>
+                <tr><td><strong>Turing TU102</strong></td><td>2018</td><td>TSMC</td><td>12FFN</td><td>18.6 B</td><td>754 mm&sup2;</td></tr>
                 <tr><td><strong>Ampere GA100</strong></td><td>2020</td><td>TSMC</td><td>7N</td><td>54.2 B</td><td>826 mm&sup2;</td></tr>
                 <tr><td><strong>Ada AD102</strong></td><td>2022</td><td>TSMC</td><td>4N</td><td>76.3 B</td><td>608 mm&sup2;</td></tr>
                 <tr><td><strong>Hopper GH100</strong></td><td>2022</td><td>TSMC</td><td>4N</td><td>80 B</td><td>814 mm&sup2;</td></tr>
-                <tr><td><strong>Blackwell B200</strong></td><td>2024</td><td>TSMC</td><td>4NP</td><td>~104 B &times; 2 = 208 B</td><td>~750 mm&sup2; &times; 2</td></tr>
+                <tr><td><strong>Blackwell B200</strong></td><td>2024</td><td>TSMC</td><td>4NP</td><td>~104 B &times; 2 = 208 B</td><td>~800 mm&sup2; &times; 2</td></tr>
             </tbody>
         </table>
     </div>
 
     <div class="callout">
         <div class="callout-label">Read between the lines</div>
-        <p>Notice GV100, GA100, GH100 all sit at <strong>815, 826, 814 mm&sup2;</strong> &mdash; the reticle ceiling. NVIDIA's flagship strategy for a decade was simply &quot;build the largest die TSMC can print.&quot; That approach hit the wall: Blackwell B200 is two ~750 mm&sup2; dies stitched together because one die <em>could not be made bigger</em>. The transistor count doubling between Hopper and Blackwell came almost entirely from going dual-die, not from process shrink.</p>
+        <p>Notice GV100, GA100, GH100 all sit at <strong>815, 826, 814 mm&sup2;</strong> &mdash; the reticle ceiling. NVIDIA's flagship strategy for a decade was simply &quot;build the largest die TSMC can print.&quot; That approach hit the wall: Blackwell B200 is two ~800 mm&sup2; dies stitched together because one die <em>could not be made bigger</em>. The transistor count doubling between Hopper and Blackwell came almost entirely from going dual-die, not from process shrink.</p>
     </div>
 
     <div class="callout">
@@ -961,7 +961,7 @@
         </div>
         <div class="tier-bar">
             <div class="tier-label">B200 (one die)</div>
-            <div class="tier-fill" style="width: 87%; background: rgba(118,185,0,0.4); border: 1px solid #76B900;">~750 mm&sup2; &times; 2 dies</div>
+            <div class="tier-fill" style="width: 93%; background: rgba(118,185,0,0.4); border: 1px solid #76B900;">~800 mm&sup2; &times; 2 dies</div>
             <div class="tier-cost">2024</div>
         </div>
     </div>
@@ -1117,12 +1117,12 @@ yield_pct(<span class="num">6.08</span>, <span class="num">0.08</span>) <span cl
             <!-- Die 0 and Die 1 -->
             <rect x="225" y="105" width="125" height="110" class="die"/>
             <text x="287" y="155" class="accent" text-anchor="middle">Die 0</text>
-            <text x="287" y="172" class="val" text-anchor="middle">~750 mm&sup2;</text>
+            <text x="287" y="172" class="val" text-anchor="middle">~800 mm&sup2;</text>
             <text x="287" y="188" class="lbl" text-anchor="middle">~104 B tx</text>
 
             <rect x="370" y="105" width="125" height="110" class="die"/>
             <text x="432" y="155" class="accent" text-anchor="middle">Die 1</text>
-            <text x="432" y="172" class="val" text-anchor="middle">~750 mm&sup2;</text>
+            <text x="432" y="172" class="val" text-anchor="middle">~800 mm&sup2;</text>
             <text x="432" y="188" class="lbl" text-anchor="middle">~104 B tx</text>
 
             <!-- Die-to-die seam annotation -->
@@ -1388,7 +1388,7 @@ yield_pct(<span class="num">6.08</span>, <span class="num">0.08</span>) <span cl
     <h3>Why the convergence</h3>
     <ul>
         <li><strong>Reticle ceiling.</strong> Big single dies stop scaling. Two reticle dies double the transistor budget at sub-2&times; cost.</li>
-        <li><strong>Yield arithmetic.</strong> Two 750 mm&sup2; dies have <em>much</em> better yield than one 1500 mm&sup2; die would (if the latter were even possible).</li>
+        <li><strong>Yield arithmetic.</strong> Two ~800 mm&sup2; dies have <em>much</em> better yield than one ~1600 mm&sup2; die would (if the latter were even possible).</li>
         <li><strong>Mix-and-match nodes.</strong> A cheap mature-node die for IO/cache; an expensive leading-node die for compute. AMD's MI300X uses N5 for compute, N6 for IO &mdash; significant cost saving.</li>
         <li><strong>Heterogeneous integration.</strong> CPU + GPU on one package (GB10 Spark, MI300A, M-series) means cache coherency at silicon speed without a board-level link.</li>
     </ul>
@@ -1512,7 +1512,7 @@ yield_pct(<span class="num">6.08</span>, <span class="num">0.08</span>) <span cl
                 label: 'Frontier training',
                 node: { '2025': '4NP', '2026': 'N3 / 4NP', '2027': 'N3P', '2028': 'A16' },
                 pkg:  { '2025': 'CoWoS-L', '2026': 'CoWoS-L', '2027': 'CoWoS-L', '2028': 'CoWoS-L + BSPDN' },
-                area: { '2025': '750 &times; 2', '2026': '~700 &times; 2', '2027': '~700 &times; 2', '2028': '~600 &times; 2&ndash;4' },
+                area: { '2025': '~800 &times; 2', '2026': '~700 &times; 2', '2027': '~700 &times; 2', '2028': '~600 &times; 2&ndash;4' },
                 tx:   { '2025': '208', '2026': '~280', '2027': '~360', '2028': '~500+' },
                 wafer: 22000,
                 retail: { '2025': '$35k&ndash;45k', '2026': '$40k&ndash;55k', '2027': '$45k&ndash;60k', '2028': '$50k+' }
@@ -1548,7 +1548,7 @@ yield_pct(<span class="num">6.08</span>, <span class="num">0.08</span>) <span cl
                 label: 'Hyperscale superpod',
                 node: { '2025': '4NP', '2026': 'N3 + 4NP', '2027': 'N3P + 4NP', '2028': 'A16 + N3P' },
                 pkg:  { '2025': 'CoWoS-L NVL72', '2026': 'CoWoS-L NVL72', '2027': 'CoWoS-L next-gen', '2028': 'CoWoS-L next-gen' },
-                area: { '2025': '~750 &times; 2 per GPU', '2026': '~700 &times; 2', '2027': '~700 &times; 2&ndash;4', '2028': '~600 &times; 4' },
+                area: { '2025': '~800 &times; 2 per GPU', '2026': '~700 &times; 2', '2027': '~700 &times; 2&ndash;4', '2028': '~600 &times; 4' },
                 tx:   { '2025': '208 / GPU', '2026': '~280 / GPU', '2027': '~400 / GPU', '2028': '~600 / GPU' },
                 wafer: 22000,
                 retail: { '2025': '$3M+ / rack', '2026': '$3.5M+ / rack', '2027': '$4M+ / rack', '2028': '$4.5M+ / rack' }
