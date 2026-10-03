@@ -992,7 +992,7 @@
                 <tr><td><strong>H100 SXM5</strong></td><td>132</td><td>5 active (80 GB HBM3)</td><td>Top-bin shipped product; ~92% SM yield</td></tr>
                 <tr><td><strong>H100 PCIe</strong></td><td>114</td><td>5 active (80 GB)</td><td>Lower-bin parts; lower clocks; PCIe form factor</td></tr>
                 <tr><td><strong>H800</strong></td><td>132</td><td>5 active</td><td>Export-restricted China SKU; capped NVLink BW</td></tr>
-                <tr><td><strong>H20</strong></td><td>78</td><td>5 active (96 GB HBM3)</td><td>China-market further-cut SKU; FP64 throttled</td></tr>
+                <tr><td><strong>H20</strong></td><td>78</td><td>6 active (96 GB HBM3)</td><td>China-market further-cut SKU; FP64 throttled</td></tr>
             </tbody>
         </table>
     </div>
@@ -1001,7 +1001,7 @@
     <ul>
         <li><strong>Spare SMs:</strong> GA100 had 128 physical SMs; only 108 (or 80 on lesser SKUs) shipped enabled &mdash; that is ~16% disabled headroom for yield.</li>
         <li><strong>Spare cache slices:</strong> L2 partitions can be selectively disabled if any tag-array fails BIST.</li>
-        <li><strong>Spare HBM stacks:</strong> the GH100 die package has 6 HBM site stacks but only 5 are connected (one is a redundant footprint).</li>
+        <li><strong>Spare HBM stacks:</strong> the GH100 die package has 6 HBM stack sites; H100 80 GB uses 5, while the 94&ndash;96 GB parts (H100 NVL, GH200, H20) use all six.</li>
         <li><strong>Speed binning within a single SKU:</strong> H100 SXM5 boards still ship at slightly different boost clock targets depending on power/leakage characterisation.</li>
     </ul>
 
@@ -1036,7 +1036,7 @@ yield_pct(<span class="num">6.08</span>, <span class="num">0.08</span>) <span cl
     <div class="diagram-grid cols-2">
         <div class="diagram-panel accent-border">
             <h4>Bandwidth</h4>
-            <p><strong>10 TB/s bidirectional</strong> across the die-to-die interface &mdash; about 2&times; what HBM3e delivers per stack. That is enough for cache-coherent traffic, L2 sharing, and CUDA kernel migration without observable cost.</p>
+            <p><strong>10 TB/s bidirectional</strong> across the die-to-die interface &mdash; about 8&times; what one HBM3e stack delivers (~1.2 TB/s). That is enough for cache-coherent traffic, L2 sharing, and CUDA kernel migration without observable cost.</p>
         </div>
         <div class="diagram-panel accent-border">
             <h4>Coherence</h4>
