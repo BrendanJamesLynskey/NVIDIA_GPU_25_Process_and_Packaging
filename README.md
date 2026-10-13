@@ -5,3 +5,5 @@ A grounded tour of the foundry physics behind every NVIDIA GPU — TSMC's proces
 **Live site:** https://brendanjameslynskey.github.io/NVIDIA_GPU_25_Process_and_Packaging/
 
 Part of the [NVIDIA GPU Architectures series](https://github.com/BrendanJamesLynskey/LLMs#nvidia-gpu-architectures).
+
+**Animated companion:** [AI Racks Explained](https://ai-racks-explained.vercel.app/) — [chapter 2, The package](https://ai-racks-explained.vercel.app/learn/02-the-package), [chapter 10, Other designs](https://ai-racks-explained.vercel.app/learn/10-other-designs).

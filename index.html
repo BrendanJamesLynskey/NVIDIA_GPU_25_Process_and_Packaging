@@ -1198,6 +1198,11 @@ yield_pct(<span class="num">6.08</span>, <span class="num">0.08</span>) <span cl
         <div class="callout-label">The trade-off in one line</div>
         <p>CoWoS-S delivers the highest BW per mm but is capacity-limited at TSMC because the interposer itself burns leading-node photolithography. CoWoS-L scales much better because most of the interposer is organic; you only burn silicon where you actually need the bandwidth. That is why every multi-die GPU launching from 2024 onward uses CoWoS-L, not CoWoS-S.</p>
     </div>
+
+    <div class="callout">
+        <div class="callout-label">Animated companion</div>
+        <p>What sits on the package (compute dies and HBM stacks) and how a model's weights fill it: AI Racks Explained, <a href="https://ai-racks-explained.vercel.app/learn/02-the-package" style="color: var(--accent);">chapter 2, the package</a>.</p>
+    </div>
 </section>
 
 <section class="slide" id="slide-07">
@@ -1421,6 +1426,11 @@ yield_pct(<span class="num">6.08</span>, <span class="num">0.08</span>) <span cl
         <div class="callout-label">The underlying truth</div>
         <p>The industry isn't really converging on chiplets &mdash; it has <strong>already converged</strong>. Every flagship 2025 AI accelerator is multi-die. The remaining argument is over <em>which</em> die-to-die fabric. NVIDIA, AMD, and Apple use proprietary fabrics; the rest of the market rallies around UCIe. Expect that pattern to hold through this decade: incumbents keep their fabrics, challengers standardise to compete.</p>
     </div>
+
+    <div class="callout">
+        <div class="callout-label">Animated companion</div>
+        <p>How other vendors' rack- and pod-scale systems are built (TPU pods, AMD Helios, AWS Trainium UltraServers): AI Racks Explained, <a href="https://ai-racks-explained.vercel.app/learn/10-other-designs" style="color: var(--accent);">chapter 10, other designs</a>.</p>
+    </div>
 </section>
 
 <section class="slide" id="slide-10">
@@ -1626,6 +1636,7 @@ yield_pct(<span class="num">6.08</span>, <span class="num">0.08</span>) <span cl
 <footer class="footer">
     <p>Part of the <a href="https://github.com/BrendanJamesLynskey/LLMs#nvidia-gpu-architectures">NVIDIA GPU Architectures Series</a></p>
     <p style="margin-top: 0.5rem; font-size: 0.8rem;"><a href="https://github.com/BrendanJamesLynskey/LLMs#nvidia-gpu-architectures">Back to Series Index</a></p>
+    <p style="margin-top: 0.5rem; font-size: 0.8rem;">Animated companion site: <a href="https://ai-racks-explained.vercel.app/">AI Racks Explained</a> &mdash; the machines underneath, chip to rack, each chapter around a model-driven animation with every figure sourced.</p>
 </footer>
 
 <script>
